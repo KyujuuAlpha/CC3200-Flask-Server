@@ -1,7 +1,24 @@
 <html>
 <head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+$(function() {
+$('a#test').bind('click', function() {
+$.getJSON('/click',
+function(data) {
+//do nothing
+});
+return false;
+});
+});
+</script>
 </head>
 <body>
-Hello World!
+Hello World!<br>
+<div class='container'>
+<form>
+<a href='#' id='test'><button>Test</button></a>
+</form>
+</div>
 </body>
 </html>
