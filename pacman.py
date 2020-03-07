@@ -46,14 +46,6 @@ is_sample_done = threading.Event()
 
 mqtt_connection = None
 shadow_client = None
-thing_name = "CC3200_Thing"
-shadow_property = "var"
-endpoint = "a1euv4eww1wx8z-ats.iot.us-west-2.amazonaws.com"
-client_id = "Web-Client-1.0"
-signing_region = "us-west-2"
-cert = "cert/client.pem"
-key = "cert/private.pem"
-root_ca = "cert/ca.pem"
 
 SHADOW_VALUE_DEFAULT = "off"
 
