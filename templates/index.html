@@ -4,19 +4,19 @@
 <script type=text/javascript>
 $(function() {
 $('a#left').bind('click', function() {
-$.getJSON('/left', function(data) {});
+$.getJSON('/enemy/left', function(data) {});
 return false;
 });
 $('a#right').bind('click', function() {
-$.getJSON('/right', function(data) {});
+$.getJSON('/enemy/right', function(data) {});
 return false;
 });
 $('a#up').bind('click', function() {
-$.getJSON('/up', function(data) {});
+$.getJSON('/enemy/up', function(data) {});
 return false;
 });
 $('a#down').bind('click', function() {
-$.getJSON('/down', function(data) {});
+$.getJSON('/enemy/down', function(data) {});
 return false;
 });
 });

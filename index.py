@@ -11,24 +11,9 @@ app.config.from_object('config')
 def index():
     return render_template("index.html")
 
-@app.route('/left')
-def leftClick():
-    change_shadow_value("left")
-    return ("nothing")
-
-@app.route('/right')
-def rightClick():
-    change_shadow_value("right")
-    return ("nothing")
-
-@app.route('/up')
-def upClick():
-    change_shadow_value("up")
-    return ("nothing")
-
-@app.route('/down')
-def downClick():
-    change_shadow_value("down")
+@app.route('/enemy/<direction>')
+def enemyDirection(direction):
+    change_shadow_value(direction)
     return ("nothing")
 
 connect()
