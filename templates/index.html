@@ -3,20 +3,8 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
 $(function() {
-$('a#left').bind('click', function() {
-$.getJSON('/enemy/left', function(data) {});
-return false;
-});
-$('a#right').bind('click', function() {
-$.getJSON('/enemy/right', function(data) {});
-return false;
-});
-$('a#up').bind('click', function() {
-$.getJSON('/enemy/up', function(data) {});
-return false;
-});
-$('a#down').bind('click', function() {
-$.getJSON('/enemy/down', function(data) {});
+$('a.direction').bind('click', function() {
+$.getJSON('/enemy/' + $(this).attr('id'), function(data) {});
 return false;
 });
 });
@@ -26,10 +14,10 @@ return false;
 Hello World!<br>
 <div class='container'>
 <form>
-<a href='#' id='left'><button>Left</button></a>
-<a href='#' id='right'><button>Right</button></a>
-<a href='#' id='up'><button>Up</button></a>
-<a href='#' id='down'><button>Down</button></a>
+<a href='#' class="direction" id='left'><button>Left</button></a>
+<a href='#' class="direction" id='right'><button>Right</button></a>
+<a href='#' class="direction" id='up'><button>Up</button></a>
+<a href='#' class="direction" id='down'><button>Down</button></a>
 </form>
 </div>
 </body>
