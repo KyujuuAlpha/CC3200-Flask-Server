@@ -1,16 +1,3 @@
-# Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License").
-# You may not use this file except in compliance with the License.
-# A copy of the License is located at
-#
-#  http://aws.amazon.com/apache2.0
-#
-# or in the "license" file accompanying this file. This file is distributed
-# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-# express or implied. See the License for the specific language governing
-# permissions and limitations under the License.
-
 from __future__ import absolute_import
 from __future__ import print_function
 import argparse
@@ -22,30 +9,19 @@ import sys
 import threading
 import traceback
 
-# - Overview -
-# This sample uses the AWS IoT Device Shadow Service to keep a property in
-# sync between device and server. Imagine a light whose color may be changed
-# through an app, or set by a local user.
-#
-# - Instructions -
-# Once connected, type a value in the terminal and press Enter to update
-# the property's "reported" value. The sample also responds when the "desired"
-# value changes on the server. To observe this, edit the Shadow document in
-# the AWS Console and set a new "desired" value.
-#
-# - Detail -
-# On startup, the sample requests the shadow document to learn the property's
-# initial state. The sample also subscribes to "delta" events from the server,
-# which are sent when a property's "desired" value differs from its "reported"
-# value. When the sample learns of a new desired value, that value is changed
-# on the device and an update is sent to the server with the new "reported"
-# value.
-
-# Using globals to simplify sample code
-is_sample_done = threading.Event()
+mqtt_connection = None
+shadow_client = None
 
 mqtt_connection = None
 shadow_client = None
+thing_name = "CC3200_Thing"
+shadow_property = "var"
+endpoint = "a1euv4eww1wx8z-ats.iot.us-west-2.amazonaws.com"
+client_id = "Web-Client-1.0"
+signing_region = "us-west-2"
+cert = "cert/client.pem"
+key = "cert/private.pem"
+root_ca = "cert/ca.pem"
 
 SHADOW_VALUE_DEFAULT = "off"
 
@@ -59,6 +35,7 @@ locked_data = LockedData()
 
 # Function for gracefully quitting this sample
 def exit(msg_or_exception):
+    global locked_data
     if isinstance(msg_or_exception, Exception):
         print("Exiting sample due to exception.")
         traceback.print_exception(msg_or_exception.__class__, msg_or_exception, sys.exc_info()[2])
@@ -81,6 +58,7 @@ def on_disconnected(disconnect_future):
 
 
 def on_get_shadow_accepted(response):
+    global locked_data
     # type: (iotshadow.GetShadowResponse) -> None
     try:
         print("Finished getting initial shadow state.")
@@ -163,11 +141,15 @@ def on_update_shadow_rejected(error):
         error.code, error.message))
 
 def set_local_value_due_to_initial_query(reported_value):
+    global locked_data
     with locked_data.lock:
         locked_data.shadow_value = reported_value
     print("Enter desired value: ") # remind user they can input new values
 
 def change_shadow_value(value):
+    global locked_data
+    global mqtt_connection
+    global shadow_client
     with locked_data.lock:
         if locked_data.shadow_value == value:
             print("Local value is already '{}'.".format(value))
@@ -188,29 +170,9 @@ def change_shadow_value(value):
     future = shadow_client.publish_update_shadow(request, mqtt.QoS.AT_LEAST_ONCE)
     future.add_done_callback(on_publish_update_shadow)
 
-def user_input_thread_fn():
-    while True:
-        try:
-            # Read user input
-            try:
-                new_value = raw_input() # python 2 only
-            except NameError:
-                new_value = input() # python 3 only
-
-            # If user wants to quit sample, then quit.
-            # Otherwise change the shadow value.
-            if new_value in ['exit', 'quit']:
-                exit("User has quit")
-                break
-            else:
-                change_shadow_value(new_value)
-
-        except Exception as e:
-            print("Exception on input thread.")
-            exit(e)
-            break
-
-if __name__ == '__main__':
+def connect():
+    global mqtt_connection
+    global shadow_client
     # Process input args
     # args = parser.parse_args()
     io.init_logging(getattr(io.LogLevel, io.LogLevel.Error.name), 'stderr')
@@ -220,24 +182,7 @@ if __name__ == '__main__':
     host_resolver = io.DefaultHostResolver(event_loop_group)
     client_bootstrap = io.ClientBootstrap(event_loop_group, host_resolver)
 
-##    # if args.use_websocket == True:
-    proxy_options = None
-##        #if (args.proxy_host):
-##        #    proxy_options = http.HttpProxyOptions(host_name=args.proxy_host, port=args.proxy_port)
-##
-##    credentials_provider = auth.AwsCredentialsProvider.new_default_chain(client_bootstrap)
-##    mqtt_connection = mqtt_connection_builder.websockets_with_default_aws_signing(
-##        endpoint=endpoint,
-##        client_bootstrap=client_bootstrap,
-##        region=signing_region,
-##        credentials_provider=credentials_provider,
-##        websocket_proxy_options=proxy_options,
-##        ca_filepath=root_ca,
-##        client_id=client_id,
-##        clean_session=False,
-##        keep_alive_secs=6)
-
-##    else:
+    # MQT connection
     mqtt_connection = mqtt_connection_builder.mtls_from_path(
         endpoint=endpoint,
         cert_filepath=cert,
@@ -264,9 +209,6 @@ if __name__ == '__main__':
     print("Connected!")
 
     try:
-        # Subscribe to necessary topics.
-        # Note that is **is** important to wait for "accepted/rejected" subscriptions
-        # to succeed before publishing the corresponding "request".
         print("Subscribing to Delta events...")
         delta_subscribed_future, _ = shadow_client.subscribe_to_shadow_delta_updated_events(
             request=iotshadow.ShadowDeltaUpdatedSubscriptionRequest(thing_name),
@@ -275,7 +217,7 @@ if __name__ == '__main__':
 
         # Wait for subscription to succeed
         delta_subscribed_future.result()
-
+        
         print("Subscribing to Update responses...")
         update_accepted_subscribed_future, _ = shadow_client.subscribe_to_update_shadow_accepted(
             request=iotshadow.UpdateShadowSubscriptionRequest(thing_name),
@@ -290,7 +232,7 @@ if __name__ == '__main__':
         # Wait for subscriptions to succeed
         update_accepted_subscribed_future.result()
         update_rejected_subscribed_future.result()
-
+        
         print("Subscribing to Get responses...")
         get_accepted_subscribed_future, _ = shadow_client.subscribe_to_get_shadow_accepted(
             request=iotshadow.GetShadowSubscriptionRequest(thing_name),
@@ -306,10 +248,6 @@ if __name__ == '__main__':
         get_accepted_subscribed_future.result()
         get_rejected_subscribed_future.result()
 
-        # The rest of the sample runs asyncronously.
-
-        # Issue request for shadow's current state.
-        # The response will be received by the on_get_accepted() callback
         print("Requesting current shadow state...")
         publish_get_future = shadow_client.publish_get_shadow(
             request=iotshadow.GetShadowRequest(thing_name),
@@ -318,15 +256,5 @@ if __name__ == '__main__':
         # Ensure that publish succeeds
         publish_get_future.result()
 
-        # Launch thread to handle user input.
-        # A "daemon" thread won't prevent the program from shutting down.
-        print("Launching thread to read user input...")
-        user_input_thread = threading.Thread(target=user_input_thread_fn, name='user_input_thread')
-        user_input_thread.daemon = True
-        user_input_thread.start()
-
     except Exception as e:
         exit(e)
-
-    # Wait for the sample to finish (user types 'quit', or an error occurs)
-    is_sample_done.wait()
