@@ -15,7 +15,7 @@ shadow_client = None
 mqtt_connection = None
 shadow_client = None
 thing_name = "CC3200_Thing"
-shadow_property = "var"
+shadow_property = "enemy_dir"
 endpoint = "a1euv4eww1wx8z-ats.iot.us-west-2.amazonaws.com"
 client_id = "Web-Client-1.0"
 signing_region = "us-west-2"
@@ -52,10 +52,6 @@ def exit(msg_or_exception):
 def on_disconnected(disconnect_future):
     # type: (Future) -> None
     print("Disconnected.")
-
-    # Signal that sample is finished
-    is_sample_done.set()
-
 
 def on_get_shadow_accepted(response):
     global locked_data

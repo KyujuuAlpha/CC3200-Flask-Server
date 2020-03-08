@@ -3,11 +3,20 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
 $(function() {
-$('a#test').bind('click', function() {
-$.getJSON('/click',
-function(data) {
-//do nothing
+$('a#left').bind('click', function() {
+$.getJSON('/left', function(data) {});
+return false;
 });
+$('a#right').bind('click', function() {
+$.getJSON('/right', function(data) {});
+return false;
+});
+$('a#up').bind('click', function() {
+$.getJSON('/up', function(data) {});
+return false;
+});
+$('a#down').bind('click', function() {
+$.getJSON('/down', function(data) {});
 return false;
 });
 });
@@ -17,7 +26,10 @@ return false;
 Hello World!<br>
 <div class='container'>
 <form>
-<a href='#' id='test'><button>Test</button></a>
+<a href='#' id='left'><button>Left</button></a>
+<a href='#' id='right'><button>Right</button></a>
+<a href='#' id='up'><button>Up</button></a>
+<a href='#' id='down'><button>Down</button></a>
 </form>
 </div>
 </body>

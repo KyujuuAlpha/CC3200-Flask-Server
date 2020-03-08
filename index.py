@@ -11,9 +11,24 @@ app.config.from_object('config')
 def index():
     return render_template("index.html")
 
-@app.route('/click')
-def click():
-    change_shadow_value("hello2")
+@app.route('/left')
+def leftClick():
+    change_shadow_value("left")
+    return ("nothing")
+
+@app.route('/right')
+def rightClick():
+    change_shadow_value("right")
+    return ("nothing")
+
+@app.route('/up')
+def upClick():
+    change_shadow_value("up")
+    return ("nothing")
+
+@app.route('/down')
+def downClick():
+    change_shadow_value("down")
     return ("nothing")
 
 connect()
