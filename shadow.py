@@ -15,7 +15,6 @@ shadow_client = None
 mqtt_connection = None
 shadow_client = None
 thing_name = "CC3200_Thing"
-shadow_property = "enemy_dir"
 endpoint = "a1euv4eww1wx8z-ats.iot.us-west-2.amazonaws.com"
 client_id = "Web-Client-1.0"
 signing_region = "us-west-2"
@@ -28,26 +27,30 @@ SHADOW_VALUE_DEFAULT = "off"
 class LockedData(object):
     def __init__(self):
         self.lock = threading.Lock()
+        self.shadow_property = None
         self.shadow_value = None
-        self.disconnect_called = False
 
-locked_data = LockedData()
+disconnect_called = False
+locked_data = []
 
 # Function for gracefully quitting this sample
 def exit(msg_or_exception):
     global locked_data
+    global disconnect_called
+
     if isinstance(msg_or_exception, Exception):
         print("Exiting sample due to exception.")
         traceback.print_exception(msg_or_exception.__class__, msg_or_exception, sys.exc_info()[2])
     else:
         print("Exiting sample:", msg_or_exception)
 
-    with locked_data.lock:
-        if not locked_data.disconnect_called:
-            print("Disconnecting...")
-            locked_data.disconnect_called = True
-            future = mqtt_connection.disconnect()
-            future.add_done_callback(on_disconnected)
+    for x in locked_data:
+        with x.lock:
+            if not disconnect_called:
+                print("Disconnecting...")
+                disconnect_called = True
+                future = mqtt_connection.disconnect()
+                future.add_done_callback(on_disconnected)
 
 def on_disconnected(disconnect_future):
     # type: (Future) -> None
@@ -59,28 +62,29 @@ def on_get_shadow_accepted(response):
     try:
         print("Finished getting initial shadow state.")
 
-        with locked_data.lock:
-            if locked_data.shadow_value is not None:
-                print("  Ignoring initial query because a delta event has already been received.")
-                return
+        for x in locked_data:
+            with x.lock:
+                if x.shadow_value is not None:
+                    print("  Ignoring initial query because a delta event has already been received.")
+                    continue
 
-        if response.state:
-            if response.state.delta:
-                value = response.state.delta.get(shadow_property)
-                if value:
-                    print("  Shadow contains delta value '{}'.".format(value))
-                    change_shadow_value(value)
-                    return
+            if response.state:
+                if response.state.delta:
+                    value = response.state.delta.get(x.shadow_property)
+                    if value:
+                        print("  Shadow contains delta value '{}'.".format(value))
+                        change_shadow_value(x.shadow_property, value)
+                        continue
 
-            if response.state.reported:
-                value = response.state.reported.get(shadow_property)
-                if value:
-                    print("  Shadow contains reported value '{}'.".format(value))
-                    set_local_value_due_to_initial_query(response.state.reported[shadow_property])
-                    return
+                if response.state.reported:
+                    value = response.state.reported.get(x.shadow_property)
+                    if value:
+                        print("  Shadow contains reported value '{}'.".format(value))
+                        set_local_value_due_to_initial_query(x.shadow_property, response.state.reported[x.shadow_property])
+                        continue
 
-        print("  Shadow document lacks '{}' property. Setting defaults...".format(shadow_property))
-        change_shadow_value(SHADOW_VALUE_DEFAULT)
+            print("  Shadow document lacks '{}' property. Setting defaults...".format(x.shadow_property))
+            change_shadow_value(x.shadow_property, SHADOW_VALUE_DEFAULT)
         return
 
     except Exception as e:
@@ -90,7 +94,7 @@ def on_get_shadow_rejected(error):
     # type: (iotshadow.ErrorResponse) -> None
     if error.code == 404:
         print("Thing has no shadow document. Creating with defaults...")
-        change_shadow_value(SHADOW_VALUE_DEFAULT)
+        change_shadow_value("var", SHADOW_VALUE_DEFAULT)
     else:
         exit("Get request was rejected. code:{} message:'{}'".format(
             error.code, error.message))
@@ -99,17 +103,18 @@ def on_shadow_delta_updated(delta):
     # type: (iotshadow.ShadowDeltaUpdatedEvent) -> None
     try:
         print("Received shadow delta event.")
-        if delta.state and (shadow_property in delta.state):
-            value = delta.state[shadow_property]
-            if value is None:
-                print("  Delta reports that '{}' was deleted. Resetting defaults...".format(shadow_property))
-                change_shadow_value(SHADOW_VALUE_DEFAULT)
-                return
+        for x in locked_data:
+            if delta.state and (x.shadow_property in delta.state):
+                value = delta.state[x.shadow_property]
+                if value is None:
+                    print("  Delta reports that '{}' was deleted. Resetting defaults...".format(x.shadow_property))
+                    change_shadow_value(x.shadow_property, SHADOW_VALUE_DEFAULT)
+                    return
+                else:
+                    print("  Delta reports that desired value is '{}'. Changing local value...".format(value))
+                    change_shadow_value(x.shadow_property, value)
             else:
-                print("  Delta reports that desired value is '{}'. Changing local value...".format(value))
-                change_shadow_value(value)
-        else:
-            print("  Delta did not report a change in '{}'".format(shadow_property))
+                print("  Delta did not report a change in '{}'".format(x.shadow_property))
 
     except Exception as e:
         exit(e)
@@ -127,7 +132,6 @@ def on_update_shadow_accepted(response):
     # type: (iotshadow.UpdateShadowResponse) -> None
     try:
         print("Finished updating reported shadow value to '{}'.".format(response.state.reported[shadow_property])) # type: ignore
-        print("Enter desired value: ") # remind user they can input new values
     except:
         exit("Updated shadow is missing the target property.")
 
@@ -136,24 +140,34 @@ def on_update_shadow_rejected(error):
     exit("Update request was rejected. code:{} message:'{}'".format(
         error.code, error.message))
 
-def set_local_value_due_to_initial_query(reported_value):
+def set_local_value_due_to_initial_query(shadow_property, reported_value):
     global locked_data
-    with locked_data.lock:
-        locked_data.shadow_value = reported_value
-    print("Enter desired value: ") # remind user they can input new values
+    for x in locked_data:
+        if x.shadow_property == shadow_property: 
+            with locked_data.lock:
+                x.shadow_value = reported_value
 
-def change_shadow_value(value):
+def change_shadow_value(shadow_property, value):
     global locked_data
     global mqtt_connection
     global shadow_client
-    with locked_data.lock:
-        if locked_data.shadow_value == value:
-            print("Local value is already '{}'.".format(value))
-            print("Enter desired value: ") # remind user they can input new values
-            return
 
-        print("Changed local shadow value to '{}'.".format(value))
-        locked_data.shadow_value = value
+    found_data = None
+    for x in locked_data:
+        if x.shadow_property == shadow_property: 
+            found_data = x
+            break
+    if found_data != None:
+        print("Following shadow property is subscribed: '{}'.".format(shadow_property))
+        return
+
+        with found_data.lock:
+            if found_data.shadow_value == value:
+                print("Local value is already '{}'.".format(value))
+                return
+
+            print("Changed local shadow value to '{}'.".format(value))
+            found_data.shadow_value = value
 
     print("Updating reported shadow value to '{}'...".format(value))
     request = iotshadow.UpdateShadowRequest(

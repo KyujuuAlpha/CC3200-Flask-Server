@@ -1,5 +1,5 @@
-from pacman import connect
-from pacman import change_shadow_value
+from shadow import connect
+from shadow import change_shadow_value
 
 from flask import Flask
 from flask import render_template
