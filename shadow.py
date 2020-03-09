@@ -180,11 +180,12 @@ def change_shadow_value(shadow_property, value):
     future = shadow_client.publish_update_shadow(request, mqtt.QoS.AT_LEAST_ONCE)
     future.add_done_callback(on_publish_update_shadow)
 
-def subscribe_shadow_property(shadow_property):
+def subscribe_shadow_property(*shadow_properties):
     global locked_data
-    new_property = LockedData()
-    new_property.shadow_property = shadow_property
-    locked_data.append(new_property)
+    for x in shadow_properties:
+        new_property = LockedData()
+        new_property.shadow_property = x
+        locked_data.append(new_property)
 
 def get_subscribed_value(shadow_property):
     global locked_data
@@ -206,8 +207,7 @@ def connect():
     client_bootstrap = io.ClientBootstrap(event_loop_group, host_resolver)
 
     # Subscribe to Shadow Properties to preserve local values
-    subscribe_shadow_property("enemy_dir")
-    subscribe_shadow_property("player_dir")
+    subscribe_shadow_property("enemy_dir", "player_dir")
 
     # MQT connection
     mqtt_connection = mqtt_connection_builder.mtls_from_path(
