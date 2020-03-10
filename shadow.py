@@ -207,7 +207,7 @@ def connect():
     client_bootstrap = io.ClientBootstrap(event_loop_group, host_resolver)
 
     # Subscribe to Shadow Properties to preserve local values
-    subscribe_shadow_property("enemy_dir", "player_dir")
+    subscribe_shadow_property("pac_loc", "b1_loc", "b2_loc", "b3_loc", "b4_loc", "bad_ctrl")
 
     # MQT connection
     mqtt_connection = mqtt_connection_builder.mtls_from_path(
