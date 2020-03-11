@@ -7,6 +7,7 @@ var canvas;
 var render;
 
 var block;
+var player;
 
 const EMPTY=0;
 const WALL=1;
@@ -72,13 +73,15 @@ function initDraw() {
 
     canvas.style.background = "#000000";
     block = new CanvasBlock("block", "rect", [0, 0], [10, 10], "#ffffff");
+    player = new CanvasBlock("player", "rect", [0, 0], [10, 10], PLAYER_COLOR);
     clear(render);
     animate();
 }
 
+var frameCount = 0;
 function animate() {
     clear(render);
-    var blockSize = 256 / 32;
+    var blockSize = canvas.width / 32;
 	for (var i = 0; i < 32; i++) {
         for (var j = 0; j < 32; j++) {
             if (map[j][i] == WALL) {
@@ -91,7 +94,21 @@ function animate() {
             }
         }
     }
+    if (player.x > 0 && player.y > 0) {
+        player.width = blockSize;
+        player.height = blockSize;
+        player.draw(render);
+    }
+    if (frameCount >= 60 * 2) {
+        frameCount = 0;
+        $.getJSON( "/api", function (jason) {
+            var player_pos = jason.pac_loc.split(" ");
+            player.x = parseInt(player_pos[0] * (canvas.width / 128));
+            player.y = parseInt(player_pos[1] * (canvas.width / 128));
+        });
+    }
     optimizeAnimationLoop(function () {
+        frameCount++;
         animate();
     });
 }
