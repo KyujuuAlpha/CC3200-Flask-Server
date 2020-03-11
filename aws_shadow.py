@@ -110,8 +110,9 @@ def shadowDeltaUpdateEvent(d):
                 # something was deleted
                 changeShadowValue(x.name, "val")
             else:
-                # something changed!
-                changeShadowValue(x.name, value)
+                if value != "#":
+                    # something changed!
+                    changeShadowValue(x.name, value)
 
 def connect():
     global mqttC
