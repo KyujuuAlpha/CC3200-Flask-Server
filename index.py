@@ -1,6 +1,6 @@
-from shadow import connect
-from shadow import change_shadow_value
-from shadow import get_subscribed_value
+from aws_shadow import connect
+from aws_shadow import changeShadowValue
+from aws_shadow import getSubscribedPropertyVal
 
 from flask import Flask
 from flask import render_template
@@ -16,17 +16,17 @@ def index():
 @app.route('/enemy', methods=['POST'])
 def enemy():
     if request.method == 'POST':
-        change_shadow_value("bad_dir", request.form['direction'])
+        changeShadowValue("bad_dir", request.form['direction'])
     return ("nothing")
 
 @app.route('/api')
 def api_page():
     return {
-        "pac_loc": get_subscribed_value("pac_loc"),
-        "b1_loc": get_subscribed_value("b1_loc"),
-        "b2_loc": get_subscribed_value("b2_loc"),
-        "b3_loc": get_subscribed_value("b3_loc"),
-        "b4_loc": get_subscribed_value("b4_loc"),
+        "pac_loc": getSubscribedPropertyVal("pac_loc"),
+        "b1_loc": getSubscribedPropertyVal("b1_loc"),
+        "b2_loc": getSubscribedPropertyVal("b2_loc"),
+        "b3_loc": getSubscribedPropertyVal("b3_loc"),
+        "b4_loc": getSubscribedPropertyVal("b4_loc"),
     }
 
 connect()
