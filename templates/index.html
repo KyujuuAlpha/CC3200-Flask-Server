@@ -74,18 +74,18 @@ function initDraw() {
     //     e.preventDefault();
     // }, false);
     canvas.addEventListener("click", function (e) {
-        var blockSize = canvas.width / 32;
-        var i = e.offsetX / blockSize, j = e.offsetY / blockSize;
-        if (i == bad1.x / blockSize && j == bad1.y / blockSize) {
+        var blockSize = floor(canvas.width / 32);
+        var i = floor(e.offsetX / blockSize), j = floor(e.offsetY / blockSize);
+        if (i == floor(bad1.x / blockSize) && j == floor(bad1.y / blockSize)) {
             $.post('/select', {'control': '0'});
             selected = 0;
-        } else if (i == bad2.x / blockSize && j == bad2.y / blockSize) {
+        } else if (i == floor(bad2.x / blockSize) && j == floor(bad2.y / blockSize)) {
             $.post('/select', {'control': '1'});
             selected = 1;
-        } else if (i == bad3.x / blockSize && j == bad3.y / blockSize) {
+        } else if (i == floor(bad3.x / blockSize) && j == floor(bad3.y / blockSize)) {
             $.post('/select', {'control': '2'});
             selected = 2;
-        } else if (i == bad4.x / blockSize && j == bad4.y / blockSize) {
+        } else if (i == floor(bad4.x / blockSize) && j == floor(bad4.y / blockSize)) {
             $.post('/select', {'control': '3'});
             selected = 3;
         } else {
@@ -109,7 +109,7 @@ var frameCount = 0;
 var readAPI = false;
 function animate() {
     clear(render);
-    var blockSize = canvas.width / 32;
+    var blockSize = floor(canvas.width / 32);
 	for (var i = 0; i < 32; i++) {
         for (var j = 0; j < 32; j++) {
             if (map[j][i] == WALL) {
