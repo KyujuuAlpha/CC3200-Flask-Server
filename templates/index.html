@@ -110,16 +110,24 @@ function animate() {
         player.draw(render);
         bad1.width = blockSize;
         bad1.height = blockSize;
-        bad1.draw(render);
+        if (bad1.x > 0 && bad1.y > 0) {
+            bad1.draw(render);
+        }
         bad2.width = blockSize;
         bad2.height = blockSize;
-        bad2.draw(render);
+        if (bad2.x > 0 && bad2.y > 0) {
+            bad2.draw(render);
+        }
         bad3.width = blockSize;
         bad3.height = blockSize;
-        bad3.draw(render);
+        if (bad3.x > 0 && bad3.y > 0) {
+            bad3.draw(render);
+        }
         bad4.width = blockSize;
         bad4.height = blockSize;
-        bad4.draw(render);
+        if (bad4.x > 0 && bad4.y > 0) {
+            bad4.draw(render);
+        }
     }
     if (frameCount >= 60 * 2) {
         readAPI = true;
