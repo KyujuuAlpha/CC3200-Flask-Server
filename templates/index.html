@@ -74,7 +74,7 @@ function initDraw() {
     //     e.preventDefault();
     // }, false);
     canvas.addEventListener("click", function (e) {
-        var blockSize = floor(canvas.width / 32);
+        var blockSize = canvas.width / 32;
         var i = floor(e.offsetX / blockSize), j = floor(e.offsetY / blockSize);
         if (i == floor(bad1.x / blockSize) && j == floor(bad1.y / blockSize)) {
             $.post('/select', {'control': '0'});
@@ -109,7 +109,7 @@ var frameCount = 0;
 var readAPI = false;
 function animate() {
     clear(render);
-    var blockSize = floor(canvas.width / 32);
+    var blockSize = canvas.width / 32;
 	for (var i = 0; i < 32; i++) {
         for (var j = 0; j < 32; j++) {
             if (map[j][i] == WALL) {
