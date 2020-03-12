@@ -41,6 +41,10 @@ def api_page():
         "b2_loc": getSubscribedPropertyVal("b2_loc"),
         "b3_loc": getSubscribedPropertyVal("b3_loc"),
         "b4_loc": getSubscribedPropertyVal("b4_loc"),
+        "b1_q": getSubscribedPropertyVal("b1_q"),
+        "b2_q": getSubscribedPropertyVal("b2_q"),
+        "b3_q": getSubscribedPropertyVal("b3_q"),
+        "b4_q": getSubscribedPropertyVal("b4_q")
     }
 
 connect()

@@ -61,7 +61,7 @@ var map = [
 var player;
 var bad1, bad2, bad3, bad4, fake;
 
-var mouseDown = false;
+// var mouseDown = false;
 var selected = -1;
 
 var blockSize = 0;
@@ -78,71 +78,71 @@ function initDraw() {
         return false;
     });
     canvas.addEventListener("mousedown", function (e) {
-        mouseDown = true;
+        //mouseDown = true;
         var i = Math.floor(e.offsetX / blockSize), j = Math.floor(e.offsetY / blockSize);
         if (i == Math.floor(bad1.x / blockSize) && j == Math.floor(bad1.y / blockSize)) {
             if (selected != 1) {
                 $.post('/select', {'control': '1'});
             }
             selected = 1;
-            fake.background = bad1.background;
-            fake.x = bad1.x;
-            fake.y = bad1.y;
+            // fake.background = bad1.background;
+            // fake.x = bad1.x;
+            // fake.y = bad1.y;
             enemy_label.innerHTML = "Selected Enemy: Red";
         } else if (i == Math.floor(bad2.x / blockSize) && j == Math.floor(bad2.y / blockSize)) {
             if (selected != 2) {
                 $.post('/select', {'control': '2'});
             }
             selected = 2;
-            fake.x = bad2.x;
-            fake.y = bad2.y;
-            fake.background = bad2.background;
+            // fake.x = bad2.x;
+            // fake.y = bad2.y;
+            // fake.background = bad2.background;
             enemy_label.innerHTML = "Selected Enemy: Cyan";
         } else if (i == Math.floor(bad3.x / blockSize) && j == Math.floor(bad3.y / blockSize)) {
             if (selected != 3) {
                 $.post('/select', {'control': '3'});
             }
             selected = 3;
-            fake.x = bad3.x;
-            fake.y = bad3.y;
-            fake.background = bad3.background;
+            // fake.x = bad3.x;
+            // fake.y = bad3.y;
+            // fake.background = bad3.background;
             enemy_label.innerHTML = "Selected Enemy: Orange";
         } else if (i == Math.floor(bad4.x / blockSize) && j == Math.floor(bad4.y / blockSize)) {
             if (selected != 4) {
                 $.post('/select', {'control': '4'});
             }
             selected = 4;
-            fake.x = bad4.x;
-            fake.y = bad4.y;
-            fake.background = bad4.background;
+            // fake.x = bad4.x;
+            // fake.y = bad4.y;
+            // fake.background = bad4.background;
             enemy_label.innerHTML = "Selected Enemy: Magenta";
         }
         e.preventDefault();
     }, false);
 
-    canvas.addEventListener("mousemove", function (e) {
-        if (mouseDown && selected > 0 && selected < 5) {
-            fake.x = e.offsetX - blockSize / 2;
-            fake.y = e.offsetY - blockSize / 2;
-        }
-        e.preventDefault();
-    }, false);
+    // canvas.addEventListener("mousemove", function (e) {
+    //     if (mouseDown && selected > 0 && selected < 5) {
+    //         fake.x = e.offsetX - blockSize / 2;
+    //         fake.y = e.offsetY - blockSize / 2;
+    //     }
+    //     e.preventDefault();
+    // }, false);
 
-    canvas.addEventListener("mouseup", function (e) {
-        mouseDown = false;
-        if (fake.x > 0 && fake.y > 0) {
-            if (selected > 0 && selected < 5) {
-                var i = Math.floor((fake.x + blockSize / 2) / blockSize);
-                var j = Math.floor((fake.y + blockSize / 2) / blockSize);
-                if (map[j][i] != WALL) {
-                    $.post('/loc', {'b': selected, 'x' : (Math.floor(i * Math.floor(128 / 32))), 'y' : (Math.floor(j * Math.floor(128 / 32)))});
-                }
-            }
-            fake.x = -1;
-            fake.y = -1;
-        }
-        e.preventDefault();
-    }, false);
+    // canvas.addEventListener("mouseup", function (e) {
+    //     mouseDown = false;
+    //     if (fake.x > 0 && fake.y > 0) {
+    //         if (selected > 0 && selected < 5) {
+    //             var i = Math.floor((fake.x + blockSize / 2) / blockSize);
+    //             var j = Math.floor((fake.y + blockSize / 2) / blockSize);
+    //             if (map[j][i] != WALL) {
+    //                 $.post('/loc', {'b': selected, 'x' : (Math.floor(i * Math.floor(128 / 32))), 'y' : (Math.floor(j * Math.floor(128 / 32)))});
+    //             }
+    //         }
+    //         fake.x = -1;
+    //         fake.y = -1;
+    //     }
+    //     e.preventDefault();
+    // }, false);
 
     canvas.style.background = "#000000";
     block = new CanvasBlock("block", "rect", [0, 0], [10, 10], "#ffffff");
@@ -197,13 +197,13 @@ function animate() {
         if (bad4.x > 0 && bad4.y > 0) {
             bad4.draw(render);
         }
-        if (mouseDown) {
-            if (fake.x > 0 && fake.y > 0) {
-                fake.width = blockSize;
-                fake.height = blockSize;
-                fake.draw(render);
-            }
-        }
+        // if (mouseDown) {
+        //     if (fake.x > 0 && fake.y > 0) {
+        //         fake.width = blockSize;
+        //         fake.height = blockSize;
+        //         fake.draw(render);
+        //     }
+        // }
     }
     if (frameCount >= 60 * 2) {
         readAPI = true;
@@ -245,11 +245,26 @@ height:100%;
 </head>
 <body>
 <center>
+<table style="width:100%;height:100%;border:0px;">
+<tr>
+<td colspan="2" align="center">
 <canvas id="canvas" width="512" height="512"></canvas><br /><br />
+</td>
+</tr>
+<tr>
+<td align="right">
+<div class='container'>
 <label id="enemy">Selected Enemy: None</label><br />
+<label id="b1q">Selected Enemy: None</label><br />
+<label id="b2q">Selected Enemy: None</label><br />
+<label id="b3q">Selected Enemy: None</label><br />
+<label id="b4q">Selected Enemy: None</label><br />
+</div>
+</td>
+<td align="left">
 <div class='container' style="width:200px;height:200px;">
 <form>
-<table style="width:100%;height:100%;">
+<table style="width:100%;height:100%;border:0px;">
 <tr>
 <td></td>
 <td><a href="#" class="direction" id="0"><button>Up</button></a></td>
@@ -267,6 +282,9 @@ height:100%;
 </table>
 </form>
 </div>
+</td>
+</tr>
+</table>
 </center>
 </body>
 </html>
