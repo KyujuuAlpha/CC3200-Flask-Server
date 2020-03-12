@@ -61,6 +61,8 @@ var map = [
 var player;
 var bad1, bad2, bad3, bad4;
 
+var selected = -1;
+
 function initDraw() {
     canvas = document.getElementById("canvas");
     render = canvas.getContext("2d");
@@ -72,17 +74,33 @@ function initDraw() {
     //     e.preventDefault();
     // }, false);
     canvas.addEventListener("click", function (e) {
-        // e.offsetX and e.offsetY
+        var blockSize = canvas.width / 32;
+        var i = e.offsetX / blockSize, j = e.offsetY / blockSize;
+        if (i == bad1.x / blockSize && j == bad1.y / blockSize) {
+            $.post('/select', {'control': '0'});
+            selected = 0;
+        } else if (i == bad2.x / blockSize && j == bad2.y / blockSize) {
+            $.post('/select', {'control': '1'});
+            selected = 1;
+        } else if (i == bad3.x / blockSize && j == bad3.y / blockSize) {
+            $.post('/select', {'control': '2'});
+            selected = 2;
+        } else if (i == bad4.x / blockSize && j == bad4.y / blockSize) {
+            $.post('/select', {'control': '3'});
+            selected = 3;
+        } else {
+
+        }
         e.preventDefault();
     }, false);
 
     canvas.style.background = "#000000";
     block = new CanvasBlock("block", "rect", [0, 0], [10, 10], "#ffffff");
     player = new CanvasBlock("player", "rect", [0, 0], [10, 10], PLAYER_COLOR);
-    bad1 = new CanvasBlock("bad1", "rect", [0, 0], [10, 10], BAD1_COLOR);
-    bad2 = new CanvasBlock("bad2", "rect", [0, 0], [10, 10], BAD2_COLOR);
-    bad3 = new CanvasBlock("bad3", "rect", [0, 0], [10, 10], BAD3_COLOR);
-    bad4 = new CanvasBlock("bad4", "rect", [0, 0], [10, 10], BAD4_COLOR);
+    bad1 = new CanvasBlock("bad1", "rect", [-1, -1], [10, 10], BAD1_COLOR);
+    bad2 = new CanvasBlock("bad2", "rect", [-1, -1], [10, 10], BAD2_COLOR);
+    bad3 = new CanvasBlock("bad3", "rect", [-1, -1], [10, 10], BAD3_COLOR);
+    bad4 = new CanvasBlock("bad4", "rect", [-1, -1], [10, 10], BAD4_COLOR);
     clear(render);
     animate();
 }

@@ -19,6 +19,13 @@ def enemy():
         changeShadowValue("bad_dir", request.form['direction'])
     return ("nothing")
 
+@app.route('/select', methods=['POST'])
+def enemy():
+    if request.method == 'POST':
+        changeShadowValue("bad_ctrl", request.form['control'])
+    return ("nothing")
+
+
 @app.route('/api')
 def api_page():
     return {
