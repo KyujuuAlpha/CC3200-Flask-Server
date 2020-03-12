@@ -1,6 +1,8 @@
 from aws_shadow import connect
 from aws_shadow import changeShadowValue
 from aws_shadow import getSubscribedPropertyVal
+from aws_shadow import selectBaddie
+from aws_shadow import queueMovement
 
 from flask import Flask
 from flask import render_template
@@ -16,13 +18,13 @@ def index():
 @app.route('/enemy', methods=['POST'])
 def enemy():
     if request.method == 'POST':
-        changeShadowValue("bad_dir", request.form['direction'])
+        queueMovement(request.form['direction'])
     return ("nothing")
 
 @app.route('/select', methods=['POST'])
 def select():
     if request.method == 'POST':
-        changeShadowValue("bad_ctrl", request.form['control'])
+        selectBaddie(int(request.form['control']))
     return ("nothing")
 
 @app.route('/loc', methods=['POST'])

@@ -25,6 +25,73 @@ shadowProperties = []
 mqttC = None
 shadow = None
 
+# Enemy queues
+selectedBaddie = 0
+b1_q = ""
+b2_q = ""
+b3_q = ""
+b4_q = ""
+
+def selectBaddie(select):
+    global selectedBaddie
+    selectedBaddie = select
+
+def queueMovement(move):
+    global selectedBaddie
+    global b1_q
+    global b2_q
+    global b3_q
+    global b4_q
+    if selectedBaddie == 1:
+        b1_q += move
+    elif selectedBaddie == 2:
+        b2_q += move
+    elif selectedBaddie == 3:
+        b3_q += move
+    elif selectedBaddie == 4:
+        b4_q += move
+    updateServerQueues()
+
+def updateServerQueues():
+    global selectedBaddie
+    global b1_q
+    global b2_q
+    global b3_q
+    global b4_q
+    queue = ""
+    if getSubscribedPropertyVal("b1_q") == "":
+        if len(b1_q) > 8:
+            queue = b1_q[:8]
+            b1_q = b1_q[8:]
+        else:
+            queue = b1_q
+            b1_q = ""
+        changeShadowValue("b1_q", queue)
+    if getSubscribedPropertyVal("b2_q") == "":
+        if len(b2_q) > 8:
+            queue = b2_q[:8]
+            b2_q = b2_q[8:]
+        else:
+            queue = b2_q
+            b2_q = ""
+        changeShadowValue("b2_q", queue)
+    if getSubscribedPropertyVal("b3_q") == "":
+        if len(b3_q) > 8:
+            queue = b3_q[:8]
+            b3_q = b3_q[8:]
+        else:
+            queue = b3_q
+            b3_q = ""
+        changeShadowValue("b3_q", queue)
+    if getSubscribedPropertyVal("b4_q") == "":
+        if len(b4_q) > 8:
+            queue = b4_q[:8]
+            b4_q = b4_q[8:]
+        else:
+            queue = b4_q
+            b4_q = ""
+        changeShadowValue("b4_q", queue)
+
 def changeShadowValue(shadowProperty, val):
     global shadowProperties
     global mqttC
@@ -112,6 +179,7 @@ def shadowDeltaUpdateEvent(d):
             else:
                 # something changed!
                 changeShadowValue(x.name, value)
+    updateServerQueues()
 
 def connect():
     global mqttC
@@ -124,7 +192,7 @@ def connect():
     clientBootstrap = io.ClientBootstrap(eventLoopGroup, hostResolver)
 
     # Subscribe to Shadow Properties to preserve local values
-    subscribeToProperties("pac_loc", "b1_loc", "b2_loc", "b3_loc", "b4_loc", "bad_ctrl", "bad_dir")
+    subscribeToProperties("pac_loc", "b1_loc", "b2_loc", "b3_loc", "b4_loc", "b1_q", "b2_q", "b3_q", "b4_q")
 
     # MQT connection
     mqttC = mqtt_connection_builder.mtls_from_path(cert, key,
