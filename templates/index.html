@@ -59,14 +59,19 @@ var map = [
 ];
 
 var player;
-var bad1, bad2, bad3, bad4;
+var bad1, bad2, bad3, bad4, fake;
 
+var mouseDown = false;
 var selected = -1;
+
+var blockSize = 0;
 
 function initDraw() {
     canvas = document.getElementById("canvas");
     enemy_label = document.getElementById("enemy");
     render = canvas.getContext("2d");
+
+    blockSize = canvas.width / 32;
 
     // window.onkeydown = function (e) {
     //     e.preventDefault();
@@ -74,27 +79,57 @@ function initDraw() {
     // canvas.addEventListener("touchstart", function (e) {
     //     e.preventDefault();
     // }, false);
-    canvas.addEventListener("click", function (e) {
-        var blockSize = canvas.width / 32;
+    canvas.addEventListener("mousedown", function (e) {
+        mouseDown = true;
         var i = Math.floor(e.offsetX / blockSize), j = Math.floor(e.offsetY / blockSize);
         if (i == Math.floor(bad1.x / blockSize) && j == Math.floor(bad1.y / blockSize)) {
             $.post('/select', {'control': '0'});
-            selected = 0;
+            selected = 1;
+            fake.background = bad1.background;
+            fake.x = bad1.x;
+            fake.y = bad1.y;
             enemy_label.innerHTML = "Selected Enemy: Red";
         } else if (i == Math.floor(bad2.x / blockSize) && j == Math.floor(bad2.y / blockSize)) {
             $.post('/select', {'control': '1'});
-            selected = 1;
+            selected = 2;
+            fake.x = bad2.x;
+            fake.y = bad2.y;
+            fake.background = bad2.background;
             enemy_label.innerHTML = "Selected Enemy: Cyan";
         } else if (i == Math.floor(bad3.x / blockSize) && j == Math.floor(bad3.y / blockSize)) {
             $.post('/select', {'control': '2'});
-            selected = 2;
+            selected = 3;
+            fake.x = bad3.x;
+            fake.y = bad3.y;
+            fake.background = bad3.background;
             enemy_label.innerHTML = "Selected Enemy: Orange";
         } else if (i == Math.floor(bad4.x / blockSize) && j == Math.floor(bad4.y / blockSize)) {
             $.post('/select', {'control': '3'});
-            selected = 3;
+            selected = 4;
+            fake.x = bad4.x;
+            fake.y = bad4.y;
+            fake.background = bad4.background;
             enemy_label.innerHTML = "Selected Enemy: Magenta";
-        } else {
+        }
+        e.preventDefault();
+    }, false);
 
+    canvas.addEventListener("mousemove", function (e) {
+        if (mouseDown && selected > 0 && selected < 5) {
+            fake.x = e.offsetX - blockSize / 2;
+            fake.y = e.offsetY - blockSize / 2;
+        }
+        e.preventDefault();
+    }, false);
+
+    canvas.addEventListener("mouseup", function (e) {
+        mouseDown = false;
+        if (fake.x > 0 && fake.y > 0) {
+            if (selected > 0 && selected < 5) {
+                $.post('/loc', {'b': selected, 'x' : (Math.floor((fake.x + blockSize / 2) / blockSize) * Math.floor(128 / 32)), 'y' : (Math.floor((fake.y + blockSize / 2) / blockSize) * Math.floor(128 / 32))});
+            }
+            fake.x = -1;
+            fake.y = -1;
         }
         e.preventDefault();
     }, false);
@@ -106,6 +141,7 @@ function initDraw() {
     bad2 = new CanvasBlock("bad2", "rect", [-1, -1], [10, 10], BAD2_COLOR);
     bad3 = new CanvasBlock("bad3", "rect", [-1, -1], [10, 10], BAD3_COLOR);
     bad4 = new CanvasBlock("bad4", "rect", [-1, -1], [10, 10], BAD4_COLOR);
+    fake = new CanvasBlock("bad4", "rect", [-1, -1], [10, 10], "#a8a8a8");
     clear(render);
     animate();
 }
@@ -114,7 +150,7 @@ var frameCount = 0;
 var readAPI = false;
 function animate() {
     clear(render);
-    var blockSize = canvas.width / 32;
+    blockSize = canvas.width / 32;
 	for (var i = 0; i < 32; i++) {
         for (var j = 0; j < 32; j++) {
             if (map[j][i] == WALL) {
@@ -150,6 +186,13 @@ function animate() {
         bad4.height = blockSize;
         if (bad4.x > 0 && bad4.y > 0) {
             bad4.draw(render);
+        }
+        if (mouseDown) {
+            if (fake.x > 0 && fake.y > 0) {
+                fake.width = blockSize;
+                fake.height = blockSize;
+                fake.draw(render);
+            }
         }
     }
     if (frameCount >= 60 * 2) {
@@ -197,7 +240,7 @@ height:100%;
 </head>
 <body>
 <center>
-<canvas id="canvas" width="256" height="256"></canvas><br />
+<canvas id="canvas" width="512" height="512"></canvas><br /><br />
 <label id="enemy">Selected Enemy: None</label><br />
 <div class='container' style="width:200px;height:200px;">
 <form>

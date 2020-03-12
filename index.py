@@ -25,6 +25,11 @@ def select():
         changeShadowValue("bad_ctrl", request.form['control'])
     return ("nothing")
 
+@app.route('/loc', methods=['POST'])
+def loc():
+    if request.method == 'POST':
+        changeShadowValue("b" + request.form['b'] + "_loc", request.form['x'] + " " + request.form['y'])
+    return ("nothing")
 
 @app.route('/api')
 def api_page():
