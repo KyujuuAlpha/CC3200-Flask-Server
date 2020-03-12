@@ -172,7 +172,25 @@ def shadowDeltaUpdateEvent(d):
             else:
                 # something changed!
                 changeShadowValue(x.name, value)
-    updateServerQueues()
+
+def shadowUpdateAcceptedEvent(r):
+    try:
+        value = r.state.reported["b1_q"]
+        updateServerQueues()
+    except Exception as e:
+        try:
+            value = r.state.reported["b2_q"]
+            updateServerQueues()
+        except Exception as e:
+            try:
+                value = r.state.reported["b3_q"]
+                updateServerQueues()
+            except Exception as e:
+                try:
+                    value = r.state.reported["b4_q"]
+                    updateServerQueues()
+                except Exception as e:
+                    return
 
 def connect():
     global mqttC
@@ -203,6 +221,9 @@ def connect():
     # Shadow Delta Event
     shadow.subscribe_to_shadow_delta_updated_events(iotshadow.ShadowDeltaUpdatedSubscriptionRequest(thingName),
                                                     mqtt.QoS.AT_LEAST_ONCE, shadowDeltaUpdateEvent)[0].result()
+    # Update Accepted
+    shadow.subscribe_to_update_shadow_accepted(iotshadow.UpdateShadowSubscriptionRequest(thingName), 
+                                                    mqtt.QoS.AT_LEAST_ONCE, shadowUpdateAcceptedEvent)
     # Get Response
     shadow.subscribe_to_get_shadow_accepted(iotshadow.GetShadowSubscriptionRequest(thingName),
                                                     mqtt.QoS.AT_LEAST_ONCE, shadowGetEvent)[0].result()
