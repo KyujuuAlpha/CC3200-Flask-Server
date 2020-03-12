@@ -75,17 +75,18 @@ function initDraw() {
     // }, false);
     canvas.addEventListener("click", function (e) {
         var blockSize = canvas.width / 32;
-        var i = floor(e.offsetX / blockSize), j = floor(e.offsetY / blockSize);
-        if (i == floor(bad1.x / blockSize) && j == floor(bad1.y / blockSize)) {
+        var i = Math.floor(e.offsetX / blockSize), j = Math.floor(e.offsetY / blockSize);
+        alert(i + ", " + j);
+        if (i == Math.floor(bad1.x / blockSize) && j == Math.floor(bad1.y / blockSize)) {
             $.post('/select', {'control': '0'});
             selected = 0;
-        } else if (i == floor(bad2.x / blockSize) && j == floor(bad2.y / blockSize)) {
+        } else if (i == Math.floor(bad2.x / blockSize) && j == Math.floor(bad2.y / blockSize)) {
             $.post('/select', {'control': '1'});
             selected = 1;
-        } else if (i == floor(bad3.x / blockSize) && j == floor(bad3.y / blockSize)) {
+        } else if (i == Math.floor(bad3.x / blockSize) && j == Math.floor(bad3.y / blockSize)) {
             $.post('/select', {'control': '2'});
             selected = 2;
-        } else if (i == floor(bad4.x / blockSize) && j == floor(bad4.y / blockSize)) {
+        } else if (i == Math.floor(bad4.x / blockSize) && j == Math.floor(bad4.y / blockSize)) {
             $.post('/select', {'control': '3'});
             selected = 3;
         } else {
