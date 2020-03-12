@@ -59,7 +59,7 @@ def updateServerQueues():
     global b3_q
     global b4_q
     queue = ""
-    if getSubscribedPropertyVal("b1_q") == "":
+    if getSubscribedPropertyVal("b1_q") == " " and b1_q != "":
         if len(b1_q) > 8:
             queue = b1_q[:8]
             b1_q = b1_q[8:]
@@ -67,7 +67,7 @@ def updateServerQueues():
             queue = b1_q
             b1_q = ""
         changeShadowValue("b1_q", queue)
-    if getSubscribedPropertyVal("b2_q") == "":
+    if getSubscribedPropertyVal("b2_q") == " " and b2_q != "":
         if len(b2_q) > 8:
             queue = b2_q[:8]
             b2_q = b2_q[8:]
@@ -75,7 +75,7 @@ def updateServerQueues():
             queue = b2_q
             b2_q = ""
         changeShadowValue("b2_q", queue)
-    if getSubscribedPropertyVal("b3_q") == "":
+    if getSubscribedPropertyVal("b3_q") == " " and b3_q != "":
         if len(b3_q) > 8:
             queue = b3_q[:8]
             b3_q = b3_q[8:]
@@ -83,7 +83,7 @@ def updateServerQueues():
             queue = b3_q
             b3_q = ""
         changeShadowValue("b3_q", queue)
-    if getSubscribedPropertyVal("b4_q") == "":
+    if getSubscribedPropertyVal("b4_q") == " " and b4_q != "":
         if len(b4_q) > 8:
             queue = b4_q[:8]
             b4_q = b4_q[8:]
