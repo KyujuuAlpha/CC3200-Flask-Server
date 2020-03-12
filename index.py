@@ -20,7 +20,7 @@ def enemy():
     return ("nothing")
 
 @app.route('/select', methods=['POST'])
-def enemy():
+def select():
     if request.method == 'POST':
         changeShadowValue("bad_ctrl", request.form['control'])
     return ("nothing")
