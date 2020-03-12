@@ -20,12 +20,6 @@ def enemy():
         queueMovement(int(request.form['baddie']), request.form['direction'])
     return ("nothing")
 
-@app.route('/select', methods=['POST'])
-def select():
-    if request.method == 'POST':
-        queueMovement("baddie", request.form['baddie'])
-    return ("nothing")
-
 @app.route('/loc', methods=['POST'])
 def loc():
     if request.method == 'POST':
