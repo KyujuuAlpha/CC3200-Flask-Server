@@ -88,24 +88,28 @@ function initDraw() {
             // fake.background = bad1.background;
             // fake.x = bad1.x;
             // fake.y = bad1.y;
+            $.post('/select', {'baddie': '0'});
             enemy_label.innerHTML = "Selected Baddie:<br />Red";
         } else if (e.offsetX >= bad2.x && e.offsetX <= bad2.x + blockSize && e.offsetY >= bad2.y && e.offsetY <= bad2.y + blockSize) {
             selected = 2;
             // fake.x = bad2.x;
             // fake.y = bad2.y;
             // fake.background = bad2.background;
+            $.post('/select', {'baddie': '1'});
             enemy_label.innerHTML = "Selected Baddie:<br />Cyan";
         } else if (e.offsetX >= bad3.x && e.offsetX <= bad3.x + blockSize && e.offsetY >= bad3.y && e.offsetY <= bad3.y + blockSize) {
             selected = 3;
             // fake.x = bad3.x;
             // fake.y = bad3.y;
             // fake.background = bad3.background;
+            $.post('/select', {'baddie': '2'});
             enemy_label.innerHTML = "Selected Baddie:<br />Orange";
         } else if (e.offsetX >= bad4.x && e.offsetX <= bad4.x + blockSize && e.offsetY >= bad4.y && e.offsetY <= bad4.y + blockSize) {
             selected = 4;
             // fake.x = bad4.x;
             // fake.y = bad4.y;
             // fake.background = bad4.background;
+            $.post('/select', {'baddie': '3'});
             enemy_label.innerHTML = "Selected Baddie:<br />Magenta";
         }
         e.preventDefault();
