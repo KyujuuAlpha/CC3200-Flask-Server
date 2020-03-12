@@ -126,7 +126,11 @@ function initDraw() {
         mouseDown = false;
         if (fake.x > 0 && fake.y > 0) {
             if (selected > 0 && selected < 5) {
-                $.post('/loc', {'b': selected, 'x' : (Math.floor((fake.x + blockSize / 2) / blockSize) * Math.floor(128 / 32)), 'y' : (Math.floor((fake.y + blockSize / 2) / blockSize) * Math.floor(128 / 32))});
+                var i = Math.floor((fake.x + blockSize / 2) / blockSize);
+                var j = Math.floor((fake.y + blockSize / 2) / blockSize);
+                if (map[j][i] != WALL) {
+                    $.post('/loc', {'b': selected, 'x' : (Math.floor(i * Math.floor(128 / 32))), 'y' : (Math.floor(j * Math.floor(128 / 32)))});
+                }
             }
             fake.x = -1;
             fake.y = -1;
