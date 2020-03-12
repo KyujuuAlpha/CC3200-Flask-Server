@@ -244,7 +244,6 @@ height:100%;
 </style>
 </head>
 <body>
-<center>
 <table style="width:100%;height:100%;border:0px;">
 <tr>
 <td colspan="2" align="center">
@@ -253,7 +252,7 @@ height:100%;
 </tr>
 <tr>
 <td align="right">
-<div class='container'>
+<div class='container' align="left">
 <label id="enemy">Selected Enemy: None</label><br />
 <label id="b1q">Selected Enemy: None</label><br />
 <label id="b2q">Selected Enemy: None</label><br />
@@ -262,29 +261,42 @@ height:100%;
 </div>
 </td>
 <td align="left">
-<div class='container' style="width:200px;height:200px;">
-<form>
-<table style="width:100%;height:100%;border:0px;">
-<tr>
-<td></td>
-<td><a href="#" class="direction" id="0"><button>Up</button></a></td>
-<td></td>
-</tr>
-<td><a href="#" class="direction" id="1"><button>Left</button></a></td>
-<td></td>
-<td><a href="#" class="direction" id="2"><button>Right</button></a></td>
-<tr>
-<td></td>
-<td>
-<a href="#" class="direction" id="3"><button>Down</button></a></td>
-<td></td>
-</tr>
-</table>
-</form>
+<div id="controllerContainer" style="width:301px;height:300px;position: relative;">
+    <div id="up" style="width:100px;height:100px;background-color:red;position:absolute;top:0px;left:100px;">
+        <div class="controllerButton" id="upB" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
+            <svg width="100%" height="100%">
+                <polygon transform="rotate(0 48,50)" fill="white" stroke="black" stroke-width="3" points="48,23 73,43 63,43 63,73 33,73 33,43 23,43" />
+            </svg>
+        </div>
+    </div>
+    <div id="left" style="width:100px;height:100px;background-color:red;position:absolute;top:100px;left:0px;">
+        <div class="controllerButton" id="leftB" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
+            <svg width="100%" height="100%">
+                <polygon transform="rotate(-90 48,50)" fill="white" stroke="black" stroke-width="3" points="48,23 73,43 63,43 63,73 33,73 33,43 23,43" />
+            </svg>
+        </div>
+    </div>
+    <div id="right" style="width:100px;height:100px;background-color:red;position:absolute;top:100px;left:200px;">
+        <div class="controllerButton" id="rightB" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
+            <svg width="100%" height="100%">
+                <polygon transform="rotate(90 48,50)" fill="white" stroke="black" stroke-width="3" points="48,23 73,43 63,43 63,73 33,73 33,43 23,43" />
+            </svg>
+        </div>
+    </div>
+    <div id="down" style="width:100px;height:100px;background-color:red;position:absolute;top:200px;left:100px;">
+        <div class="controllerButton" id="downB" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
+            <svg width="100%" height="100%">
+                <polygon transform="rotate(180 48,50)" fill="white" stroke="black" stroke-width="3" points="48,23 73,43 63,43 63,73 33,73 33,43 23,43" />
+            </svg>
+        </div>
+    </div>
+    <div id="moveController" style="width:100px;height:100px;background-color:red;position:absolute;top:100px;left:100px;">
+        <div class="iTouchDrag_moveSpecifiedID" id="object_controllerContainer" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
+        </div>
+    </div>
 </div>
 </td>
 </tr>
 </table>
-</center>
 </body>
 </html>
