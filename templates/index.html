@@ -76,7 +76,6 @@ function initDraw() {
     canvas.addEventListener("click", function (e) {
         var blockSize = canvas.width / 32;
         var i = Math.floor(e.offsetX / blockSize), j = Math.floor(e.offsetY / blockSize);
-        alert(i + ", " + j);
         if (i == Math.floor(bad1.x / blockSize) && j == Math.floor(bad1.y / blockSize)) {
             $.post('/select', {'control': '0'});
             selected = 0;
