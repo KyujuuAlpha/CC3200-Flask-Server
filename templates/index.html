@@ -83,28 +83,36 @@ function initDraw() {
         mouseDown = true;
         var i = Math.floor(e.offsetX / blockSize), j = Math.floor(e.offsetY / blockSize);
         if (i == Math.floor(bad1.x / blockSize) && j == Math.floor(bad1.y / blockSize)) {
-            $.post('/select', {'control': '0'});
+            if (selected != 1) {
+                $.post('/select', {'control': '0'});
+            }
             selected = 1;
             fake.background = bad1.background;
             fake.x = bad1.x;
             fake.y = bad1.y;
             enemy_label.innerHTML = "Selected Enemy: Red";
         } else if (i == Math.floor(bad2.x / blockSize) && j == Math.floor(bad2.y / blockSize)) {
-            $.post('/select', {'control': '1'});
+            if (selected != 2) {
+                $.post('/select', {'control': '1'});
+            }
             selected = 2;
             fake.x = bad2.x;
             fake.y = bad2.y;
             fake.background = bad2.background;
             enemy_label.innerHTML = "Selected Enemy: Cyan";
         } else if (i == Math.floor(bad3.x / blockSize) && j == Math.floor(bad3.y / blockSize)) {
-            $.post('/select', {'control': '2'});
+            if (selected != 3) {
+                $.post('/select', {'control': '2'});
+            }
             selected = 3;
             fake.x = bad3.x;
             fake.y = bad3.y;
             fake.background = bad3.background;
             enemy_label.innerHTML = "Selected Enemy: Orange";
         } else if (i == Math.floor(bad4.x / blockSize) && j == Math.floor(bad4.y / blockSize)) {
-            $.post('/select', {'control': '3'});
+            if (selected != 4) {
+                $.post('/select', {'control': '3'});
+            }
             selected = 4;
             fake.x = bad4.x;
             fake.y = bad4.y;
