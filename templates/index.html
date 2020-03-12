@@ -73,49 +73,40 @@ function initDraw() {
 
     blockSize = canvas.width / 32;
 
-    $('a.direction').bind('click', function() {
-        $.post('/enemy', {'direction': $(this).attr('id')});
+    // set default select to zero
+
+    $('.controllerButton').bind('click', function() {
+        if (selected > 0) {
+            $.post('/enemy', {'baddie': selected, 'direction': $(this).attr('id')});
+        }
         return false;
     });
     canvas.addEventListener("mousedown", function (e) {
         //mouseDown = true;
-        var i = Math.floor(e.offsetX / blockSize), j = Math.floor(e.offsetY / blockSize);
-        if (i == Math.floor(bad1.x / blockSize) && j == Math.floor(bad1.y / blockSize)) {
-            if (selected != 1) {
-                $.post('/select', {'control': '1'});
-            }
+        if (e.offsetX >= bad1.x && e.offsetX <= bad1.x + blockSize && e.offsetY >= bad1.y && e.offsetY <= bad1.y + blockSize) {
             selected = 1;
             // fake.background = bad1.background;
             // fake.x = bad1.x;
             // fake.y = bad1.y;
-            enemy_label.innerHTML = "Selected Enemy: Red";
-        } else if (i == Math.floor(bad2.x / blockSize) && j == Math.floor(bad2.y / blockSize)) {
-            if (selected != 2) {
-                $.post('/select', {'control': '2'});
-            }
+            enemy_label.innerHTML = "Selected Baddie:<br />Red";
+        } else if (e.offsetX >= bad2.x && e.offsetX <= bad2.x + blockSize && e.offsetY >= bad2.y && e.offsetY <= bad2.y + blockSize) {
             selected = 2;
             // fake.x = bad2.x;
             // fake.y = bad2.y;
             // fake.background = bad2.background;
-            enemy_label.innerHTML = "Selected Enemy: Cyan";
-        } else if (i == Math.floor(bad3.x / blockSize) && j == Math.floor(bad3.y / blockSize)) {
-            if (selected != 3) {
-                $.post('/select', {'control': '3'});
-            }
+            enemy_label.innerHTML = "Selected Baddie:<br />Cyan";
+        } else if (e.offsetX >= bad3.x && e.offsetX <= bad3.x + blockSize && e.offsetY >= bad3.y && e.offsetY <= bad3.y + blockSize) {
             selected = 3;
             // fake.x = bad3.x;
             // fake.y = bad3.y;
             // fake.background = bad3.background;
-            enemy_label.innerHTML = "Selected Enemy: Orange";
-        } else if (i == Math.floor(bad4.x / blockSize) && j == Math.floor(bad4.y / blockSize)) {
-            if (selected != 4) {
-                $.post('/select', {'control': '4'});
-            }
+            enemy_label.innerHTML = "Selected Baddie:<br />Orange";
+        } else if (e.offsetX >= bad4.x && e.offsetX <= bad4.x + blockSize && e.offsetY >= bad4.y && e.offsetY <= bad4.y + blockSize) {
             selected = 4;
             // fake.x = bad4.x;
             // fake.y = bad4.y;
             // fake.background = bad4.background;
-            enemy_label.innerHTML = "Selected Enemy: Magenta";
+            enemy_label.innerHTML = "Selected Baddie:<br />Magenta";
         }
         e.preventDefault();
     }, false);
@@ -154,6 +145,28 @@ function initDraw() {
     fake = new CanvasBlock("bad4", "rect", [-1, -1], [10, 10], "#a8a8a8");
     clear(render);
     animate();
+}
+
+function renderQueue(bq, elem) {
+    if (bq != "ready") {
+        elem.innerHTML = "";
+        for (var i = 0; i < bq.length; i++) {
+            if (i % 4 == 0 && i != 0) {
+                elem.innerHTML += "<br>";
+            }
+            if (bq.charAt(i) == 0) {
+                elem.innerHTML += "Up ";
+            } else if (bq.charAt(i) == 1) {
+                elem.innerHTML += "Left ";
+            } else if (bq.charAt(i) == 2) {
+                elem.innerHTML += "Right ";
+            } else if (bq.charAt(i) == 3) {
+                elem.innerHTML += "Down ";
+            } 
+        }
+    } else {
+        elem.innerHTML = "None";
+    }
 }
 
 var frameCount = 0;
@@ -224,6 +237,11 @@ function animate() {
             pos = jason.b4_loc.split(" ");
             bad4.x = parseInt(pos[0] * (canvas.width / 128));
             bad4.y = parseInt(pos[1] * (canvas.width / 128));
+
+            renderQueue(jason.b1_q, document.getElementById("b1q"));
+            renderQueue(jason.b2_q, document.getElementById("b2q"));
+            renderQueue(jason.b3_q, document.getElementById("b3q"));
+            renderQueue(jason.b4_q, document.getElementById("b4q"));
         });
     }
     optimizeAnimationLoop(function () {
@@ -237,9 +255,12 @@ initDraw();
 });
 </script>
 <style>
-button {
-width:100%;
-height:100%;
+label {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.q {
+    font-size: small;
 }
 </style>
 </head>
@@ -247,51 +268,49 @@ height:100%;
 <table style="width:100%;height:100%;border:0px;">
 <tr>
 <td colspan="2" align="center">
-<canvas id="canvas" width="512" height="512"></canvas><br /><br />
+<canvas id="canvas" width="384" height="384"></canvas><br /><br />
 </td>
 </tr>
 <tr>
 <td align="right">
-<div class='container' align="left">
-<label id="enemy">Selected Enemy: None</label><br />
-<label id="b1q">Selected Enemy: None</label><br />
-<label id="b2q">Selected Enemy: None</label><br />
-<label id="b3q">Selected Enemy: None</label><br />
-<label id="b4q">Selected Enemy: None</label><br />
-</div>
+<h3><label id="enemy">Selected Baddie:<br />None</label></h3>
+<label class="q"><b>Red Queue:</b><br><label id="b1q" class="q">None</label><br /><br />
+<label class="q"><b>Cyan Queue</b><br><label id="b2q" class="q">None</label></label><br /><br />
+<label class="q"><b>Orange Queue:</b><br><label id="b3q" class="q">None</label></label><br /><br />
+<label class="q"><b>Magenta Queue:</b><br><label id="b4q" class="q">None</label></label><br /><br />
 </td>
-<td align="left">
+<td align="center">
 <div id="controllerContainer" style="width:301px;height:300px;position: relative;">
-    <div id="up" style="width:100px;height:100px;background-color:red;position:absolute;top:0px;left:100px;">
-        <div class="controllerButton" id="upB" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
+    <div id="up" style="width:100px;height:100px;background-color:rgb(85, 128, 209);position:absolute;top:0px;left:100px;">
+        <div class="controllerButton" id="0" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
             <svg width="100%" height="100%">
                 <polygon transform="rotate(0 48,50)" fill="white" stroke="black" stroke-width="3" points="48,23 73,43 63,43 63,73 33,73 33,43 23,43" />
             </svg>
         </div>
     </div>
-    <div id="left" style="width:100px;height:100px;background-color:red;position:absolute;top:100px;left:0px;">
-        <div class="controllerButton" id="leftB" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
+    <div id="left" style="width:100px;height:100px;background-color:rgb(85, 128, 209);position:absolute;top:100px;left:0px;">
+        <div class="controllerButton" id="1" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
             <svg width="100%" height="100%">
                 <polygon transform="rotate(-90 48,50)" fill="white" stroke="black" stroke-width="3" points="48,23 73,43 63,43 63,73 33,73 33,43 23,43" />
             </svg>
         </div>
     </div>
-    <div id="right" style="width:100px;height:100px;background-color:red;position:absolute;top:100px;left:200px;">
-        <div class="controllerButton" id="rightB" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
+    <div id="right" style="width:100px;height:100px;background-color:rgb(85, 128, 209);position:absolute;top:100px;left:200px;">
+        <div class="controllerButton" id="2" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
             <svg width="100%" height="100%">
                 <polygon transform="rotate(90 48,50)" fill="white" stroke="black" stroke-width="3" points="48,23 73,43 63,43 63,73 33,73 33,43 23,43" />
             </svg>
         </div>
     </div>
-    <div id="down" style="width:100px;height:100px;background-color:red;position:absolute;top:200px;left:100px;">
-        <div class="controllerButton" id="downB" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
+    <div id="down" style="width:100px;height:100px;background-color:rgb(85, 128, 209);position:absolute;top:200px;left:100px;">
+        <div class="controllerButton" id="3" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
             <svg width="100%" height="100%">
                 <polygon transform="rotate(180 48,50)" fill="white" stroke="black" stroke-width="3" points="48,23 73,43 63,43 63,73 33,73 33,43 23,43" />
             </svg>
         </div>
     </div>
-    <div id="moveController" style="width:100px;height:100px;background-color:red;position:absolute;top:100px;left:100px;">
-        <div class="iTouchDrag_moveSpecifiedID" id="object_controllerContainer" style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
+    <div id="moveController" style="width:100px;height:100px;background-color:rgb(85, 128, 209);position:absolute;top:100px;left:100px;">
+        <div style="background-color:none;border-style:solid;border-color:black;width:95px;height:95px;">
         </div>
     </div>
 </div>

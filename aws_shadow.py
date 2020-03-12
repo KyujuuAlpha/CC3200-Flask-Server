@@ -26,18 +26,12 @@ mqttC = None
 shadow = None
 
 # Enemy queues
-selectedBaddie = 0
 b1_q = ""
 b2_q = ""
 b3_q = ""
 b4_q = ""
 
-def selectBaddie(select):
-    global selectedBaddie
-    selectedBaddie = select
-
-def queueMovement(move):
-    global selectedBaddie
+def queueMovement(selectedBaddie, move):
     global b1_q
     global b2_q
     global b3_q
@@ -53,7 +47,6 @@ def queueMovement(move):
     updateServerQueues()
 
 def updateServerQueues():
-    global selectedBaddie
     global b1_q
     global b2_q
     global b3_q
@@ -97,7 +90,7 @@ def changeShadowValue(shadowProperty, val):
     global mqttC
     global shadow
 
-    print("updating value")
+    # print("updating value")
 
     # first check if it exists
     foundShadow = None
@@ -169,7 +162,7 @@ def shadowGetEvent(r):
 
 def shadowDeltaUpdateEvent(d):
     global shadowProperties
-    print("delta event")
+    # print("delta event")
     for x in shadowProperties:
         if d.state and (x.name in d.state):
             value = d.state.get(x.name)
