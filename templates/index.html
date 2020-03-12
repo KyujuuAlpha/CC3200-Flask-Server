@@ -15,9 +15,13 @@ const POINT=2;
 const SPAWN=3;
 
 //https://trolsoft.ru/en/articles/rgb565-color-picker
-const WALL_COLOR='#0996FF'
-const POINT_COLOR='#F7BA00'
-const PLAYER_COLOR='#EFFF00'
+const WALL_COLOR='#0996FF';
+const POINT_COLOR='#F7BA00';
+const PLAYER_COLOR='#EFFF00';
+const BAD1_COLOR='#EF0000';
+const BAD2_COLOR='#00EBD6';
+const BAD3_COLOR='#EF9600';
+const BAD4_COLOR='#EF00A5';
 
 var map = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -55,6 +59,7 @@ var map = [
 ];
 
 var player;
+var bad1, bad2, bad3, bad4;
 
 function initDraw() {
     canvas = document.getElementById("canvas");
@@ -74,11 +79,16 @@ function initDraw() {
     canvas.style.background = "#000000";
     block = new CanvasBlock("block", "rect", [0, 0], [10, 10], "#ffffff");
     player = new CanvasBlock("player", "rect", [0, 0], [10, 10], PLAYER_COLOR);
+    bad1 = new CanvasBlock("bad1", "rect", [0, 0], [10, 10], BAD1_COLOR);
+    bad2 = new CanvasBlock("bad2", "rect", [0, 0], [10, 10], BAD2_COLOR);
+    bad3 = new CanvasBlock("bad3", "rect", [0, 0], [10, 10], BAD3_COLOR);
+    bad4 = new CanvasBlock("bad4", "rect", [0, 0], [10, 10], BAD4_COLOR);
     clear(render);
     animate();
 }
 
 var frameCount = 0;
+var readAPI = false;
 function animate() {
     clear(render);
     var blockSize = canvas.width / 32;
@@ -94,17 +104,42 @@ function animate() {
             }
         }
     }
-    if (player.x > 0 && player.y > 0) {
+    if (readAPI) {
         player.width = blockSize;
         player.height = blockSize;
         player.draw(render);
+        bad1.width = blockSize;
+        bad1.height = blockSize;
+        bad1.draw(render);
+        bad2.width = blockSize;
+        bad2.height = blockSize;
+        bad2.draw(render);
+        bad3.width = blockSize;
+        bad3.height = blockSize;
+        bad3.draw(render);
+        bad4.width = blockSize;
+        bad4.height = blockSize;
+        bad4.draw(render);
     }
     if (frameCount >= 60 * 2) {
+        readAPI = true;
         frameCount = 0;
         $.getJSON( "/api", function (jason) {
-            var player_pos = jason.pac_loc.split(" ");
-            player.x = parseInt(player_pos[0] * (canvas.width / 128));
-            player.y = parseInt(player_pos[1] * (canvas.width / 128));
+            var pos = jason.pac_loc.split(" ");
+            player.x = parseInt(pos[0] * (canvas.width / 128));
+            player.y = parseInt(pos[1] * (canvas.width / 128));
+            pos = jason.b1_loc.split(" ");
+            bad1.x = parseInt(pos[0] * (canvas.width / 128));
+            bad1.y = parseInt(pos[1] * (canvas.width / 128));
+            pos = jason.b2_loc.split(" ");
+            bad2.x = parseInt(pos[0] * (canvas.width / 128));
+            bad2.y = parseInt(pos[1] * (canvas.width / 128));
+            pos = jason.b3_loc.split(" ");
+            bad3.x = parseInt(pos[0] * (canvas.width / 128));
+            bad3.y = parseInt(pos[1] * (canvas.width / 128));
+            pos = jason.b4_loc.split(" ");
+            bad4.x = parseInt(pos[0] * (canvas.width / 128));
+            bad4.y = parseInt(pos[1] * (canvas.width / 128));
         });
     }
     optimizeAnimationLoop(function () {
