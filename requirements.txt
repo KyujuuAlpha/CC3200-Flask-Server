@@ -1,5 +1,5 @@
 awscrt==0.5.11
-awsiotsdk==1.0.5
+awsiotsdk==1.7.0
 Click==7.0
 Flask==1.1.1
 itsdangerous==1.1.0
